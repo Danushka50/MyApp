@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserData } from "../api/webApi";
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
   },
   shadow: {
     backgroundColor: "#fff",
-    shadowColor: "#000",
+    shadowColor: Platform.OS === "ios" ? "#C0C0C0" : "#000",
     marginBottom: 10,
     marginHorizontal: 15,
     padding: 10,
@@ -211,7 +212,8 @@ const styles = StyleSheet.create({
   },
   flatList: {
     marginTop: 10,
-    marginBottom: (height / 2) * 1.3,
+    marginBottom:
+      Platform.OS === "ios" ? (height / 2) * 1.05 : (height / 2) * 1.3,
   },
   commentTitle: {
     marginHorizontal: 15,

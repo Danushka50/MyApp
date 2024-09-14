@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Alert,
+  Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Base64 } from "js-base64";
@@ -246,6 +247,7 @@ const styles = StyleSheet.create({
   },
   rememberMeText: {
     fontSize: 14,
+    marginLeft: Platform.OS === "ios" ? 10 : 0,
   },
   rememberMeContainer: {
     flexDirection: "row",
