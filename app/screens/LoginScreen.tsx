@@ -7,32 +7,53 @@ import {
   ImageBackground,
   Alert,
 } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Base64 } from "js-base64";
 import CheckBox from "@react-native-community/checkbox";
 
 import CustomTextInput from "../components/CustomTextInput";
 import { fetchUserData } from "../api/webApi";
-import { setUser } from "../redux/auth/actionCreators";
+import { setRememberMe, setUser } from "../redux/auth/actionCreators";
+import { validateEmail } from "../helper";
 
 interface Props {
   navigation: any;
 }
+
+/**
+ * LoginScreen component handles user login and authentication.
+ *
+ * This component allows users to input their email and password, handle form submission,
+ * and manage the "Remember Me" option. It also interacts with Redux for state management
+ * and uses `redux-persist` for persistence.
+ *
+ * @param {Props} props - The component props including navigation object.
+ *
+ * @returns {React.FC} - The rendered LoginScreen component.
+ */
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
+  // Retrieve "Remember Me" status from Redux store
+  const isRememberMe = useSelector((state: any) => state.auth.isRememberMe);
+
+  // Local state for email, password, error message, and checkbox toggle
   const [email, setEmail] = useState("Sincere@april.biz");
   const [password, setPassword] = useState("TGVhbm5lIEdyYWhhbQ==");
   const [error, setError] = useState("");
-  const [toggleCheckBox, setToggleCheckBox] = useState(false);
+  const [toggleCheckBox, setToggleCheckBox] = useState(isRememberMe);
 
+  // Redux dispatch function
   const dispatch = useDispatch();
 
+  /**
+   * Handles user login by validating input and fetching user data.
+   */
   const handleLogin = () => {
     if (!email || !password) {
       setError("Both fields are required");
       return;
     }
 
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+    if (validateEmail(email)) {
       setError("Invalid email address");
       return;
     }
@@ -44,18 +65,23 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     );
   };
 
+  /**
+   * Success callback for user data fetch. Validates user credentials and dispatches actions.
+   *
+   * @param {any} data - The fetched user data.
+   */
   const successCallback = (data: any) => {
-    // Find a user with the matching username
+    // Find a user with the matching email
     const user = data.find((u: any) => u.email === email);
 
     if (user) {
-      let userEmail = user.email; // Return the username if found
+      let userEmail = user.email;
       let userName = user.name;
       let key = Base64.decode(password);
 
       if (key === userName && userEmail === email) {
-        dispatch(setUser(user));
-        navigation.navigate("Dashboard"); // Simulate successful login and navigate to Dashboard
+        dispatch(setUser(user)); // Dispatch action to set user
+        navigation.navigate("Dashboard"); // Navigate to Dashboard
       } else {
         Alert.alert("Error", "Invalid details");
       }
@@ -64,20 +90,50 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  /**
+   * Error callback for user data fetch. Displays an error alert.
+   *
+   * @param {any} error - The error encountered during fetch.
+   */
   const errorCallback = (error: any) => {
     Alert.alert("Error", "User login failed. Please check the details");
   };
 
+  /**
+   * Updates email state on text input change.
+   *
+   * @param {string} text - The new email text.
+   */
   const onEmailChanged = (text: string) => {
     setError("");
     setEmail(text);
   };
 
+  /**
+   * Updates password state on text input change.
+   *
+   * @param {string} text - The new password text.
+   */
   const onPasswordChanged = (text: string) => {
     setError("");
     setPassword(text);
   };
 
+  /**
+   * Handles the "Remember Me" checkbox toggle change.
+   *
+   * @param {boolean} value - The new checkbox value.
+   */
+  const onToggleValueChange = (value: boolean) => {
+    setToggleCheckBox(value);
+    dispatch(setRememberMe(value)); // Dispatch action to update "Remember Me" state
+  };
+
+  /**
+   * Renders the text input fields for email and password.
+   *
+   * @returns {JSX.Element} - The rendered text input fields.
+   */
   const renderTextInputs = () => {
     return (
       <View>
@@ -96,10 +152,20 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     );
   };
 
+  /**
+   * Renders error message if any error exists.
+   *
+   * @returns {JSX.Element | null} - The rendered error message or null.
+   */
   const renderError = () => {
     return error ? <Text style={styles.errorText}>{error}</Text> : null;
   };
 
+  /**
+   * Renders the "Remember Me" checkbox and label.
+   *
+   * @returns {JSX.Element} - The rendered "Remember Me" checkbox and label.
+   */
   const renderRememberMe = () => {
     return (
       <View style={styles.rememberMeContainer}>
@@ -107,13 +173,18 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           disabled={false}
           value={toggleCheckBox}
           tintColors={{ true: "orange" }}
-          onValueChange={(newValue) => setToggleCheckBox(newValue)}
+          onValueChange={onToggleValueChange}
         />
         <Text style={styles.rememberMeText}>Remember me</Text>
       </View>
     );
   };
 
+  /**
+   * Renders the login button.
+   *
+   * @returns {JSX.Element} - The rendered login button.
+   */
   const renderLoginButton = () => {
     return (
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
@@ -139,6 +210,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 };
+
+// Styles for the LoginScreen component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
