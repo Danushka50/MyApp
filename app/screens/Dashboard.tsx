@@ -14,8 +14,13 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserData } from "../api/webApi";
 import { persistor } from "../redux/store";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+} from "@react-navigation/native";
 import { logOut } from "../redux/user/actionCreators";
+import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 
 const { height } = Dimensions.get("window"); // Get screen dimensions for responsive design
 
@@ -28,7 +33,7 @@ const Dashboard: React.FC = () => {
   const [userPosts, setUserPosts] = useState<any>(null); // Local state to store user's posts
 
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
   // Destructure address details from userData for readability
   const { street, suite, city } = userData?.address || {};
