@@ -619,9 +619,9 @@
     "ios": {
       "sourceDir": "/Users/dhanushkap/Projects/MyApp/ios",
       "xcodeProject": {
-        "name": "MyApp.xcodeproj",
+        "name": "MyApp.xcworkspace",
         "path": ".",
-        "isWorkspace": false
+        "isWorkspace": true
       },
       "assets": []
     },

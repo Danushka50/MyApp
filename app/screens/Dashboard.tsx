@@ -12,7 +12,7 @@ import {
   Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserData } from "../api/webApi";
+import { fetchData } from "../api/webApi";
 import { persistor } from "../redux/store";
 import {
   NavigationProp,
@@ -27,7 +27,7 @@ const { height } = Dimensions.get("window"); // Get screen dimensions for respon
 // Dashboard screen component
 const Dashboard: React.FC = () => {
   const url = "https://jsonplaceholder.typicode.com/posts"; // API endpoint for fetching user posts
-  const user = useSelector((state: any) => state.auth.user); // Accessing the user object from Redux store
+  const user = useSelector((state: any) => state?.auth?.user); // Accessing the user object from Redux store
 
   const [userData, setUserData] = useState<any>(user); // Local state to store user data
   const [userPosts, setUserPosts] = useState<any>(null); // Local state to store user's posts
@@ -41,7 +41,7 @@ const Dashboard: React.FC = () => {
   // Effect hook to set initial user data and fetch posts
   useEffect(() => {
     setUserData(user); // Set user data from Redux store
-    fetchUserData(url, successCallback, errorCallback); // Fetch posts when component mounts
+    fetchData(url, successCallback, errorCallback); // Fetch posts when component mounts
   }, [userData]); // Re-run the effect if userData changes
 
   // Callback for successful data fetching
@@ -254,6 +254,7 @@ const styles = StyleSheet.create({
   logoutContainer: {
     marginHorizontal: 20,
     marginBottom: 10,
+    marginTop: 20,
     flexDirection: "row",
   },
   logoutButtonContainer: {

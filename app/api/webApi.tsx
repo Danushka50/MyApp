@@ -7,7 +7,7 @@
  *
  * @returns {Promise<void>} - A promise that resolves when the operation completes. The promise does not return any value.
  */
-export const fetchUserData = async (
+export const fetchData = async (
   apiPath: string,
   successCallback: (data: any) => void,
   errorCallback: (error: any) => void

@@ -34,7 +34,15 @@ const StackNavigator: React.FC = () => {
             options={{ headerShown: false }}
           />
         )}
-        <Stack.Screen name="Dashboard" component={Dashboard} />
+        <Stack.Screen
+          name="Dashboard"
+          component={Dashboard}
+          options={{
+            headerBackTitleVisible: false,
+            headerLeft: () => <></>,
+            gestureEnabled: false,
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

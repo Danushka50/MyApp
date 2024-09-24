@@ -1,10 +1,18 @@
 module.exports = {
   preset: "react-native",
-  setupFilesAfterEnv: ["./jest.setup.js"], // Adjust the path if necessary
   transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest",
-    "^.+\\.(js|jsx)$": "babel-jest",
+    "^.+\\.[tj]sx?$": "babel-jest",
   },
-  testPathIgnorePatterns: ["/node_modules/", "/dist/"],
-  testEnvironment: "node",
+  setupFilesAfterEnv: [
+    "./jestSetup.js", // Path to the mock setup file
+    "@testing-library/jest-native/extend-expect",
+  ],
+  transformIgnorePatterns: [
+    "node_modules/(?!(react-redux|react-native|@react-native|react-navigation|@react-navigation)/)",
+    // Add other libraries if necessary
+  ],
+  moduleNameMapper: {
+    "@react-native-async-storage/async-storage":
+      "<rootDir>/__mocks__/@react-native-async-storage/async-storage.js",
+  },
 };

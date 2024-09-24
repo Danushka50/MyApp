@@ -1,3 +1,5 @@
+// React Native uses Metro to build your JavaScript code and assets
+
 const { getDefaultConfig, mergeConfig } = require("@react-native/metro-config");
 
 /**

@@ -7,13 +7,14 @@ import {
   ImageBackground,
   Alert,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Base64 } from "js-base64";
 import CheckBox from "@react-native-community/checkbox";
 
 import CustomTextInput from "../components/CustomTextInput";
-import { fetchUserData } from "../api/webApi";
+import { fetchData } from "../api/webApi";
 import { setRememberMe, setUser } from "../redux/auth/actionCreators";
 import { validateEmail } from "../helper";
 
@@ -34,13 +35,14 @@ interface Props {
  */
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   // Retrieve "Remember Me" status from Redux store
-  const isRememberMe = useSelector((state: any) => state.auth.isRememberMe);
+  const isRememberMe = useSelector((state: any) => state?.auth?.isRememberMe);
 
   // Local state for email, password, error message, and checkbox toggle
   const [email, setEmail] = useState("Sincere@april.biz");
   const [password, setPassword] = useState("TGVhbm5lIEdyYWhhbQ==");
   const [error, setError] = useState("");
   const [toggleCheckBox, setToggleCheckBox] = useState(isRememberMe);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Redux dispatch function
   const dispatch = useDispatch();
@@ -59,7 +61,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    fetchUserData(
+    setIsLoading(true);
+    fetchData(
       "https://jsonplaceholder.typicode.com/users",
       successCallback,
       errorCallback
@@ -72,8 +75,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
    * @param {any} data - The fetched user data.
    */
   const successCallback = (data: any) => {
+    setIsLoading(false);
     // Find a user with the matching email
-    const user = data.find((u: any) => u.email === email);
+    const user = data.find((userData: any) => userData.email === email);
 
     if (user) {
       let userEmail = user.email;
@@ -97,6 +101,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
    * @param {any} error - The error encountered during fetch.
    */
   const errorCallback = (error: any) => {
+    setIsLoading(false);
     Alert.alert("Error", "User login failed. Please check the details");
   };
 
@@ -194,6 +199,14 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     );
   };
 
+  const renderActivityIndicator = () => {
+    return (
+      isLoading && (
+        <ActivityIndicator style={styles.loading} size={40} color={"orange"} />
+      )
+    );
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -208,6 +221,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           {renderLoginButton()}
         </View>
       </ImageBackground>
+      {renderActivityIndicator()}
     </View>
   );
 };
@@ -252,6 +266,14 @@ const styles = StyleSheet.create({
   rememberMeContainer: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  loading: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
   },
 });
 
